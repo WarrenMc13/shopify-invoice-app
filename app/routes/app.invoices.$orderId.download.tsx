@@ -1,7 +1,9 @@
+import { redirect } from '@remix-run/node';
 import { authenticate } from '~/shopify.server';
 import { buildInvoiceData } from '~/services/invoice.server';
 import { generateInvoicePdf } from '~/services/pdf.server';
 import { getSettings } from '~/models/settings.server';
+import { getActivePlan, getPlanLimits } from '~/services/billing.server';
 import db from '~/db.server';
 import type { LoaderFunctionArgs } from '@remix-run/node';
 
@@ -40,10 +42,28 @@ const ORDER_QUERY = `#graphql
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
+
+  const activePlan = await getActivePlan(request);
+  const { invoicesPerMonth } = getPlanLimits(activePlan);
+
+  if (invoicesPerMonth !== Infinity) {
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const count = await db.invoiceLog.count({
+      where: { shop: session.shop, generatedAt: { gte: startOfMonth } },
+    });
+    if (count >= invoicesPerMonth) {
+      return redirect('/app/billing');
+    }
+  }
+
   const orderId = decodeURIComponent(params.orderId!);
 
   const response = await admin.graphql(ORDER_QUERY, { variables: { id: orderId } });
   const { data } = await response.json();
+
+  if (!data.order) {
+    throw new Response('Order not found', { status: 404 });
+  }
 
   const settings = await getSettings(session.shop);
   const shopWithSettings = {

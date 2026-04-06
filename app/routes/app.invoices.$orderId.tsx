@@ -47,6 +47,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const response = await admin.graphql(ORDER_QUERY, { variables: { id: orderId } });
   const { data } = await response.json();
+
+  if (!data.order) {
+    throw new Response('Order not found', { status: 404 });
+  }
+
   const settings = await getSettings(session.shop);
   const shopWithSettings = {
     ...data.shop,
