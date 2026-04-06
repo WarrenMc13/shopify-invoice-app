@@ -69,6 +69,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const shopWithSettings = {
     ...data.shop,
     name: settings.businessName || data.shop.name,
+    taxNumber: settings.taxNumber,
   };
 
   const invoiceData = buildInvoiceData(data.order, shopWithSettings);

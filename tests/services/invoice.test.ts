@@ -33,6 +33,7 @@ const mockOrder = {
 const mockShop = {
   name: 'My Test Shop',
   email: 'shop@example.com',
+  taxNumber: '',
   billingAddress: {
     address1: '456 Commerce St',
     city: 'San Francisco',

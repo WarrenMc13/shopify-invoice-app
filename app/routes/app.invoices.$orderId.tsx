@@ -56,6 +56,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const shopWithSettings = {
     ...data.shop,
     name: settings.businessName || data.shop.name,
+    taxNumber: settings.taxNumber,
   };
   const invoice = buildInvoiceData(data.order, shopWithSettings);
 
@@ -99,6 +100,9 @@ export default function InvoicePage() {
                   <Text as="p" fontWeight="semibold">{invoice.shop.name}</Text>
                   <Text as="p" tone="subdued">{invoice.shop.email}</Text>
                   <Text as="p" tone="subdued">{invoice.shop.address}</Text>
+                  {invoice.shop.taxNumber && (
+                    <Text as="p" tone="subdued">Tax No: {invoice.shop.taxNumber}</Text>
+                  )}
                 </BlockStack>
               </InlineStack>
 

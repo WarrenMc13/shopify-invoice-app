@@ -23,6 +23,15 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Uint8Arr
   if (invoice.shop.address) {
     page.drawText(invoice.shop.address, { x: 370, y: height - 96, size: 10, font, color: grey });
   }
+  if (invoice.shop.taxNumber) {
+    page.drawText(`Tax No: ${invoice.shop.taxNumber}`, {
+      x: 370,
+      y: height - 114,
+      size: 10,
+      font,
+      color: grey,
+    });
+  }
 
   // ── Bill To ──────────────────────────────────────────────
   page.drawText('Bill To', { x: 50, y: height - 155, size: 11, font: bold, color: black });

@@ -5,6 +5,7 @@ export interface InvoiceData {
     name: string;
     email: string;
     address: string;
+    taxNumber: string;
   };
   customer: {
     name: string;
@@ -42,6 +43,7 @@ export function buildInvoiceData(order: any, shopData: any): InvoiceData {
       ]
         .filter(Boolean)
         .join(', '),
+      taxNumber: shopData.taxNumber ?? '',
     },
     customer: {
       name: customerName || order.email,
