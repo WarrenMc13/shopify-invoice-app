@@ -14,7 +14,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const plan = formData.get('plan') as 'STARTER' | 'PRO';
+  const plan = formData.get('plan');
+  if (plan !== 'STARTER' && plan !== 'PRO') {
+    return json({ error: 'Invalid plan selected' }, { status: 400 });
+  }
   const confirmationUrl = await requestSubscriptionUrl(request, plan);
   return redirect(confirmationUrl);
 };
